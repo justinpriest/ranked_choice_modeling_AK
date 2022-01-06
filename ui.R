@@ -16,36 +16,38 @@ library(shinythemes)
 library(shinydashboard)
 
 shinyUI(fluidPage(theme = shinytheme("sandstone"),
-                  navbarPage("This is my project's title", 
+                  navbarPage("Modeling Alaska RCV Outcomes", 
                              tabPanel("Modeling",
                                       sidebarLayout(
                                         sidebarPanel(
                                           tags$head(tags$style(HTML("hr {border-top: 1px solid #b3b3b3;}"))), # optional. sets color/width of horiz line in hr()  
                                           h2("Set up some options:"),
                                           hr(), # we defined this style up above in tags$head
-                                          # I use conditional panels here in the sidebar
-                                          conditionalPanel(condition = "input.tabs == 'Set Up Demographics' ",
-                                                           selectInput("sppchoice", label = h3("Select species"), 
-                                                                       choices = list("Sockeye Salmon" = "Sockeye",  "Coho Salmon" = "Coho", 
-                                                                                      selected = "Coho")),
-                                                           selectInput("maturitysel", "Choose maturity:", 
-                                                                       choices = list("All" = "All", "Jack only" = "Jack", "Adult only" = "Adult"), 
-                                                                       selected = c("All")),
-                                                           hr(), # we defined this style up above in tags$head
-                                                           p("this is text")),
                                           
                                           conditionalPanel(condition = "input.tabs == 'Show Outcome!'",
                                                            checkboxInput("showoutliers", "Highlight outliers?", value = FALSE) ),
+                                          conditionalPanel(condition = "input.tabs == 'Set Up Demographics'",
+                                                           p("Define Alaska's electorate"),
+                                                           numericInput("cons", "% Firmly Conservative:", value=35, min = 20, max = 45),
+                                                           numericInput("indp", "% True Independents:", value=40, min = 10, max = 50),
+                                                           numericInput("libs", "% Firmly Progressive:", value=25, min = 15, max = 40),
+                                                           textOutput("sumcheck")),
+                                          hr(),
+                                          conditionalPanel(condition = "input.tabs == 'Set Up Demographics'",
+                                                           p("Define Alaska's electorate"),
+                                                           sliderInput("spreadcons", "spread", value=35, min = 20, max = 45)),
+                                          hr()
                                         ), # end sidebar panel
-                                        
-                                        
+
                                         
                                         mainPanel(
                                           tabsetPanel(
                                             tabPanel("Set Up Demographics",
                                                      h2("Make some choices about Alaska's demographics"),
                                                      plotOutput("currentdemography"),
-                                                     actionButton('switchtab', 'Switch tab')),
+                                                     textOutput("percdemoc"),
+                                                     actionButton('switchtab', 'Show Results')),
+                                            tabPanel("Define Candidates", plotOutput("____")),
                                             tabPanel("Show Outcome!", plotOutput("outlierplot")),
                                             id="tabs"
                                           )
